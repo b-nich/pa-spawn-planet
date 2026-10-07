@@ -174,7 +174,7 @@ once the landing phase begins, `assignments received`, optional
 2. Bump `version` in both `modinfo.json` files, commit, tag `vX.Y.Z`, push the tag.
 3. The workflow attaches `dist/com.pa.bteam.spawnplanet.zip` and
    `dist/com.pa.bteam.spawnplanet-server.zip` to a GitHub release.
-   `https://github.com/OWNER/REPO/releases/latest/download/<identifier>.zip`
+   `https://github.com/b-nich/pa-spawn-planet/releases/latest/download/<identifier>.zip`
    is a stable link for the Community Mods list.
 4. Submit or update the mod list entries through the PA Discord's mod
    submissions channel. The server entry should list the client mod as a

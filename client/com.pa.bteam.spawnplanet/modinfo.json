@@ -9,7 +9,7 @@
     "build": "124683",
     "date": "2026-10-06",
     "signature": "not yet implemented",
-    "forum": "https://github.com/OWNER/REPO",
+    "forum": "https://github.com/b-nich/pa-spawn-planet",
     "category": ["ui", "lobby", "titans"],
     "scenes": {
         "global_mod_list": [
