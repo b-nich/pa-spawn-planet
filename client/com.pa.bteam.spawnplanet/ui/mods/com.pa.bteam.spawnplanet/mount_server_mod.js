@@ -151,6 +151,27 @@
         });
     };
 
+    // Remembered across game launches so the zip generated last time can be
+    // mounted the instant the game starts, before the mod manager has even
+    // published its mount order. Hosting within the first half minute after
+    // boot would otherwise launch the server before the override is in place.
+    var remember = function (key, value) { try { localStorage.setItem(key, value); } catch (e) { } };
+    var recall = function (key) { try { return localStorage.getItem(key); } catch (e) { return null; } };
+    var ENABLED_KEY = 'spawnplanet_server_enabled';
+    var CRC_KEY = 'spawnplanet_override_crc';
+
+    var mountedEarly = false;
+    if (recall(ENABLED_KEY) !== 'false') {
+        api.file.exists(OVERRIDE_PATH).then(function (exists) {
+            if (!exists)
+                return;
+            mountedEarly = true;
+            api.file.zip.mount(OVERRIDE_PATH, '/', false).then(function (result) {
+                log(result ? 'previously generated override mounted early from ' + OVERRIDE_PATH : 'early mount of ' + OVERRIDE_PATH + ' failed');
+            });
+        });
+    }
+
     var buildAndMount = function () {
         $.ajax({ url: SOURCE, dataType: 'text', cache: false }).done(function (source) {
             if (!source || source.indexOf('[spawnplanet]') < 0) {
@@ -159,18 +180,17 @@
             }
             var data = utf8Bytes(source);
             var key = String(crc32(data));
-            var previous = null;
-            try { previous = sessionStorage.getItem('spawnplanet_override_crc'); } catch (e) { }
 
-            if (previous === key) {
-                // Already generated this session; just make sure it is mounted.
-                mount();
+            if (recall(CRC_KEY) === key) {
+                // Same script as last time: the existing zip is current.
+                if (!mountedEarly)
+                    mount();
                 return;
             }
 
             var dataUrl = 'data:application/zip;base64,' + base64(buildZip(ENTRY, data));
             api.download.start(dataUrl, OVERRIDE_FILE, 30).then(function () {
-                try { sessionStorage.setItem('spawnplanet_override_crc', key); } catch (e) { }
+                remember(CRC_KEY, key);
                 log('override zip generated (' + data.length + ' bytes of landing.js), saving to ' + OVERRIDE_PATH);
                 waitForDownload(0);
             }, function (error) {
@@ -185,10 +205,12 @@
     var checkEnabled = function () {
         $.getJSON(MODS_JSON).done(function (data) {
             var order = (data && data.mount_order) || [];
-            if (order.indexOf(SERVER_MOD_ID) >= 0)
+            var enabled = order.indexOf(SERVER_MOD_ID) >= 0;
+            remember(ENABLED_KEY, enabled ? 'true' : 'false');
+            if (enabled)
                 buildAndMount();
             else
-                log('server mod is not enabled in Community Mods; override not mounted');
+                log('server mod is not enabled in Community Mods; override not mounted' + (mountedEarly ? ' (restart to clear the early mount)' : ''));
         }).fail(function () {
             attempt = attempt + 1;
             if (attempt <= MAX_RETRIES)
