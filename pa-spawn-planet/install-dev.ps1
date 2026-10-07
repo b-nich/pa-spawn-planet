@@ -38,14 +38,13 @@ function Deploy($source, $target) {
 Deploy $clientSource $clientTarget
 Deploy $serverSource $serverTarget
 
-# 2. The client mod now generates the one-file override zip itself at runtime
-#    (see mount_server_mod.js). Remove the hand-copied zip from earlier builds;
-#    a zip with modinfo.json at its root is treated as a mod and never passed
-#    to the local server.
-$staleZip = Join-Path $paRoot "download\$serverId.zip"
-foreach ($f in @($staleZip, "$staleZip.dlmeta")) {
-    if (Test-Path $f) { Remove-Item $f -Force; Write-Host "Removed stale $f" }
-}
+# 2. The server-script override must be mounted when the local server starts.
+#    The client mod mounts this zip (same name and layout Community Mods uses)
+#    from the download folder, and the game passes it to server.exe on launch.
+$zipSource = Join-Path $PSScriptRoot "dist\$serverId.zip"
+$zipTarget = Join-Path $paRoot "download\$serverId.zip"
+Copy-Item $zipSource $zipTarget -Force
+Write-Host "Copied $zipSource -> $zipTarget"
 
 Write-Host ''
 Write-Host "In game: Community Mods > Installed > enable both 'Spawn Planet Picker' and 'Spawn Planet Picker - Server'."

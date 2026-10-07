@@ -99,23 +99,16 @@ either. The only mount the server's script loader sees at startup is one
 layered over the root, and the game passes every zip the client has mounted to
 the local server on launch.
 
-One more wrinkle, learned the hard way: the game only passes along zips that
-are not mods. A zip with `modinfo.json` at its root, which is exactly what
-Community Mods downloads, is treated as a mod and left out of the server's
-mount list even though the client reports the mount as successful.
-
-So the client mod's `mount_server_mod.js` (run on the main game page of every
-scene) builds a one-file zip at runtime containing only the server mod's
-`server-script/states/landing.js`, saves it as
-`/download/com.pa.bteam.spawnplanet-override.zip` through the same download
-API the mod manager uses for its own generated zips, and mounts that at the
-filesystem root. It:
+So the client mod's `mount_server_mod.js` (run on every scene) mounts the
+server mod's zip, which Community Mods stores as
+`/download/com.pa.bteam.spawnplanet-server.zip`, at the filesystem root. It:
 
 - only does so when the server mod is enabled in Community Mods, read from the
   mount order the manager publishes at `/server_mods/mods.json`;
-- reads the landing script from the installed server mod, so there is nothing
-  to keep in sync and the generated zip can never contain anything else;
-- regenerates only when the script's checksum changes within a game session;
+- reads the zip's catalog first and refuses to mount unless it contains exactly
+  `modinfo.json` and `server-script/states/landing.js`, so the mechanism cannot
+  shadow any other game file. `package.js` enforces the same rule when
+  building the zip;
 - cannot unmount, so disabling the server mod takes effect after a restart.
 
 The long-term fix is upstream: either a landing policy for human players or

@@ -1,0 +1,17 @@
+/* Spawn Planet Picker - lobby styling */
+
+.form-control-landing.spawn-planet {
+    width: 139px;
+    float: right;
+    margin: -1px 4px 0px 0px;
+}
+
+.form-control-landing.spawn-planet.disabled {
+    opacity: 0.75;
+}
+
+.system-options.spawnplanet-warning {
+    color: #e0a040;
+    font-size: 12px;
+    margin-top: 4px;
+}

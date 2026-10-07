@@ -1,0 +1,4 @@
+# Generated and hand-written scripts are LF; PA reads them as-is.
+* text=auto eol=lf
+*.png binary
+*.zip binary

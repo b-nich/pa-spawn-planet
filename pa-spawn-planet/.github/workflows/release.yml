@@ -1,0 +1,51 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax check scripts
+        run: |
+          for f in client/com.pa.bteam.spawnplanet/ui/mods/com.pa.bteam.spawnplanet/*.js \
+                   server/com.pa.bteam.spawnplanet-server/server-script/states/landing.js \
+                   server/build.js server/test_assign.js package.js; do
+            node --check "$f"
+          done
+      - name: Validate modinfo files
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('client/com.pa.bteam.spawnplanet/modinfo.json','utf8'))"
+          node -e "JSON.parse(require('fs').readFileSync('server/com.pa.bteam.spawnplanet-server/modinfo.json','utf8'))"
+      - name: Package
+        run: node package.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mod-zips
+          path: dist/*.zip
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node package.js
+      - name: Publish release with mod zips
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          generate_release_notes: true
