@@ -1,0 +1,18 @@
+{
+    "context": "server",
+    "identifier": "com.pa.bteam.spawnplanet-server",
+    "display_name": "Spawn Planet Picker - Server",
+    "description": "Makes the lobby's per-player starting planet picks take effect: each army's landing zones are limited to the planet chosen for it. Host only; works for locally hosted games. Players need the Spawn Planet Picker client mod to make a pick, and it is installed automatically when joining.",
+    "author": "Brad (B-Team)",
+    "authors": ["Brad (B-Team)"],
+    "version": "0.2.0",
+    "build": "124683",
+    "date": "2026-10-06",
+    "signature": "not yet implemented",
+    "forum": "https://github.com/b-nich/pa-spawn-planet",
+    "category": ["lobby", "titans"],
+    "companions": ["com.pa.bteam.spawnplanet"],
+    "dependencies": ["com.pa.bteam.spawnplanet"],
+    "priority": 100,
+    "enabled": true
+}

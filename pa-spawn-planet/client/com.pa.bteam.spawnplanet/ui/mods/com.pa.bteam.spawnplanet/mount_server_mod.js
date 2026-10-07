@@ -34,12 +34,6 @@
     if (!window.api || !api.file || !api.file.zip || !api.file.zip.mount)
         return;
 
-    // global_mod_list scripts also run in helper panels (icon atlases, chat)
-    // that lack jQuery and ship a different lodash. One mount per scene from
-    // the main game page is all that is needed.
-    if (!api.Panel || api.Panel.pageName !== 'game' || typeof $ !== 'function' || !$.getJSON)
-        return;
-
     var log = function (text) { console.log('[spawnplanet] ' + text); };
 
     // Normalise whatever zip.catalog returns into a list of file paths.
@@ -71,12 +65,12 @@
                 log('could not interpret zip catalog, mounting anyway: ' + JSON.stringify(catalog).substr(0, 300));
             }
             else {
-                var unexpected = paths.filter(function (p) { return ALLOWED.indexOf(p) < 0; });
+                var unexpected = _.difference(paths, ALLOWED);
                 if (unexpected.length) {
                     log('REFUSING to mount ' + ZIP + ': unexpected entries ' + JSON.stringify(unexpected));
                     return;
                 }
-                if (paths.indexOf('server-script/states/landing.js') < 0) {
+                if (!_.contains(paths, 'server-script/states/landing.js')) {
                     log('REFUSING to mount ' + ZIP + ': landing.js override missing');
                     return;
                 }
@@ -93,7 +87,7 @@
     var checkEnabled = function () {
         $.getJSON(MODS_JSON).done(function (data) {
             var order = (data && data.mount_order) || [];
-            if (order.indexOf(SERVER_MOD_ID) >= 0)
+            if (_.contains(order, SERVER_MOD_ID))
                 mount();
             else
                 log('server mod is not enabled in Community Mods; override not mounted');
