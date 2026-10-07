@@ -2,14 +2,14 @@
     "context": "client",
     "identifier": "com.pa.bteam.spawnplanet",
     "display_name": "Spawn Planet Picker",
-    "description": "Pick which planet each player starts on from the lobby. Each player picks for their own slot, the host picks for AIs and can override anyone. Needs the Spawn Planet Picker server mod active on the host for choices to take effect.",
+    "description": "Pick which planet each player starts on from the lobby. Each player picks for their own slot, the host picks for AIs and can override anyone. The host also needs 'Spawn Planet Picker - Server' for picks to take effect.",
     "author": "Brad (B-Team)",
     "authors": ["Brad (B-Team)"],
-    "version": "0.1.0",
+    "version": "0.2.0",
     "build": "124683",
     "date": "2026-10-06",
     "signature": "not yet implemented",
-    "forum": "",
+    "forum": "https://github.com/OWNER/REPO",
     "category": ["ui", "lobby", "titans"],
     "scenes": {
         "global_mod_list": [
